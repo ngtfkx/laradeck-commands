@@ -19,15 +19,15 @@ class MakeViewCommand extends Command
     {
         $viewName = $this->argument('name');
 
-        $fileNameWithPath = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $viewName) . '.blade.php');
+        $viewPath = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $viewName) . '.blade.php');
 
-        $path = dirname($fileNameWithPath);
+        $directory = dirname($viewPath);
 
-        if (!is_dir($path)) {
-            \File::makeDirectory($path, 0755, true);
+        if (!is_dir($directory)) {
+            \File::makeDirectory($directory, 0755, true);
         }
 
-        \File::put($fileNameWithPath, '');
+        \File::put($viewPath, '');
 
         $this->info('Success');
     }
