@@ -54,8 +54,8 @@ class MakeViewCommand extends Command
     {
         $values = [];
 
-        foreach($value as $item) {
-            if(Str::contains($item, ',')) {
+        foreach ($value as $item) {
+            if (Str::contains($item, ',')) {
                 $values = array_merge($values, explode(',', $item));
             } else {
                 $values[] = $item;
@@ -63,6 +63,14 @@ class MakeViewCommand extends Command
         }
 
         return $values;
+    }
+
+    protected function block($name, $type): string
+    {
+        $content = PHP_EOL . PHP_EOL . "@" . $type . "('" . $name . "')" . PHP_EOL;
+        $content .= "@end" . $type;
+
+        return $content;
     }
 
     protected function content($extends, $sections, $stacks, $components): string
@@ -73,19 +81,16 @@ class MakeViewCommand extends Command
             $content .= "@extends('" . $extends . "')";
         }
 
-        foreach ($sections as $section) {
-            $content .=  PHP_EOL . PHP_EOL . "@section('" . $section . "')" . PHP_EOL;
-            $content .= "@endsection";
-        }
+        $types = [
+            'section' => $sections,
+            'component' => $components,
+            'push' => $stacks,
+        ];
 
-        foreach ($components as $component) {
-            $content .= PHP_EOL . PHP_EOL . "@component('" . $component . "')" . PHP_EOL;
-            $content .= "@endcomponent";
-        }
-
-        foreach ($stacks as $stack) {
-            $content .= PHP_EOL . PHP_EOL . "@push('" . $stack . "')" . PHP_EOL;
-            $content .= "@endpush";
+        foreach ($types as $key => $values) {
+            foreach ($values as $item) {
+                $content .= $this->block($item, $key);
+            }
         }
 
         return $content;
