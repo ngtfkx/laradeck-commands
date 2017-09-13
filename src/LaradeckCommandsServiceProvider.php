@@ -11,6 +11,7 @@ class LaradeckCommandsServiceProvider extends ServiceProvider
      */
     protected $commands = [
         DownloadCommand::class,
+        MakeViewCommand::class
     ];
 
     /**
