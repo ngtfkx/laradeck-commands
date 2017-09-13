@@ -27,8 +27,11 @@ class MakeViewCommand extends Command
             \File::makeDirectory($directory, 0755, true);
         }
 
-        \File::put($viewPath, '');
-
-        $this->info('View created successfully.');
+        if (file_exists($viewPath)) {
+            $this->error('View already exists!');
+        } else {
+            \File::put($viewPath, '');
+            $this->info('View created successfully.');
+        }
     }
 }
