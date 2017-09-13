@@ -73,7 +73,17 @@ class MakeViewCommand extends Command
         return $content;
     }
 
-    protected function content($extends, $sections, $stacks, $components): string
+    protected function blocks($key, $values): string {
+        $content = '';
+
+        foreach ($values as $item) {
+            $content .= $this->block($item, $key);
+        }
+
+        return $content;
+    }
+
+    protected function content(string $extends, array $sections, array $stacks, array $components): string
     {
         $content = '';
 
@@ -88,9 +98,7 @@ class MakeViewCommand extends Command
         ];
 
         foreach ($types as $key => $values) {
-            foreach ($values as $item) {
-                $content .= $this->block($item, $key);
-            }
+            $content .= $this->blocks($key, $values);
         }
 
         return $content;
