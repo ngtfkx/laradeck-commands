@@ -7,22 +7,25 @@ use Illuminate\Support\Facades\Storage;
 
 class DownloadCommand extends Command
 {
-    protected $signature = 'laradeck:download {url} {--save_as=} {--path=}';
+    protected $signature = 'laradeck:download 
+                            {url} 
+                            {--name= : Save file with name} 
+                            {--path= : Path relative storage/app}';
 
     protected $description = 'Download file';
 
     /**
-     * @var
+     * @var string
      */
     protected $url;
 
     /**
-     * @var
+     * @var string
      */
     protected $file;
 
     /**
-     * @var
+     * @var string
      */
     protected $path;
 
@@ -37,7 +40,7 @@ class DownloadCommand extends Command
 
         $this->file = $this->getFileName();
 
-        $this->path = $this->getPath();
+        $this->path = $this->getFilePath();
 
         $resource = fopen($this->url, 'r');
 
@@ -46,18 +49,27 @@ class DownloadCommand extends Command
         fclose($resource);
     }
 
+    /**
+     * @return string
+     */
     protected function getFileNameWithPath(): string
     {
-        return $this->path . '/' . $this->file;
+        return $this->path . DIRECTORY_SEPARATOR . $this->file;
     }
 
-    protected function getPath(): string
+    /**
+     * @return string
+     */
+    protected function getFilePath(): string
     {
         return $this->option('path') ?: '';
     }
 
+    /**
+     * @return string
+     */
     protected function getFileName(): string
     {
-        return $this->option('save_as') ?: array_slice(explode('/', $this->url), -1)[0];
+        return $this->option('name') ?: array_slice(explode('/', $this->url), -1)[0];
     }
 }

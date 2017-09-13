@@ -57,6 +57,23 @@ php artisan laradeck:view admin.users.show --section=content,sidebar
 
 Similarly for `@push` (`--stack`) and `@component` (`--component`) directives.
 
+### laradeck:download
+
+``` bash
+# download file and save it as storage/app/8SE_CIgzZw8.jpg
+php artisan laradeck:download https://pp.userapi.com/c7008/v7008434/a3dc5/8SE_CIgzZw8.jpg
+```
+
+``` bash
+# download file and save it as storage/app/123.jpg
+php artisan laradeck:download https://pp.userapi.com/c7008/v7008434/a3dc5/8SE_CIgzZw8.jpg --name=123.jpg
+```
+
+``` bash
+# download file and save it as storage/app/test/photo/123.jpg
+php artisan laradeck:download https://pp.userapi.com/c7008/v7008434/a3dc5/8SE_CIgzZw8.jpg --name=123.jpg --path=test/photo
+```
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
