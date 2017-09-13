@@ -7,9 +7,46 @@ use Illuminate\Support\Str;
 
 class MakeViewCommand extends Command
 {
-    protected $signature = 'laradeck:view {name} {--force} {--extends=} {--section=*} {--stack=*} {--component=*}';
+    protected $signature = 'laradeck:view 
+                            {name : View name with dot syntax} 
+                            {--F|force : Rewrite exists view} 
+                            {--extends= : Extends directive} 
+                            {--section=* : Section directive} 
+                            {--stack=* : Push directive} 
+                            {--component=* : Component directive}
+                            ';
 
-    protected $description = 'Make view';
+    protected $description = 'Create a new view';
+
+    /**
+     * @var string
+     */
+    protected $view;
+
+    /**
+     * @var bool
+     */
+    protected $force;
+
+    /**
+     * @var string
+     */
+    protected $extends;
+
+    /**
+     * @var array
+     */
+    protected $sections;
+
+    /**
+     * @var array
+     */
+    protected $stacks;
+
+    /**
+     * @var array
+     */
+    protected $components;
 
     public function __construct()
     {
@@ -18,28 +55,33 @@ class MakeViewCommand extends Command
 
     public function handle()
     {
-        $view = $this->argument('name');
+        $this->view = $this->argument('name');
 
-        $force = $this->option('force');
+        $this->force = $this->option('force');
 
-        $extends = $this->option('extends');
+        $this->extends = $this->option('extends');
 
-        $sections = $this->parse($this->option('section'));
+        $this->sections = $this->parse($this->option('section'));
 
-        $stacks = $this->parse($this->option('stack'));
+        $this->stacks = $this->parse($this->option('stack'));
 
-        $components = $this->parse($this->option('component'));
+        $this->components = $this->parse($this->option('component'));
 
-        $path = $this->path($view);
+        $path = $this->path();
 
-        $content = $this->content($extends, $sections, $stacks, $components);
+        $content = $this->content();
 
-        $this->create($path, $content, $force);
+        $this->create($path, $content);
     }
 
-    protected function path(string $view): string
+    /**
+     * Get path of view file and create directories for it
+     *
+     * @return string
+     */
+    protected function path(): string
     {
-        $path = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $view) . '.blade.php');
+        $path = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $this->view) . '.blade.php');
 
         $directory = dirname($path);
 
@@ -50,6 +92,52 @@ class MakeViewCommand extends Command
         return $path;
     }
 
+    /**
+     * Generate content of a view
+     *
+     * @return string
+     */
+    protected function content(): string
+    {
+        $content = '';
+
+        if ($this->extends) {
+            $content .= "@extends('" . $this->extends . "')";
+        }
+
+        $types = [
+            'section' => $this->sections,
+            'component' => $this->components,
+            'push' => $this->stacks,
+        ];
+
+        foreach ($types as $key => $values) {
+            $content .= $this->blocks($key, $values);
+        }
+
+        return $content;
+    }
+
+    /**
+     * Write content to a view
+     *
+     * @param string $path
+     * @param string $content
+     */
+    protected function create(string $path, string $content)
+    {
+        if ($this->force || !file_exists($path)) {
+            \File::put($path, $content);
+            $this->info('View created successfully.');
+        } else {
+            $this->error('View already exists!');
+        }
+    }
+
+    /**
+     * @param $value
+     * @return array
+     */
     protected function parse($value): array
     {
         $values = [];
@@ -65,6 +153,11 @@ class MakeViewCommand extends Command
         return $values;
     }
 
+    /**
+     * @param $name
+     * @param $type
+     * @return string
+     */
     protected function block($name, $type): string
     {
         $content = PHP_EOL . PHP_EOL . "@" . $type . "('" . $name . "')" . PHP_EOL;
@@ -73,7 +166,13 @@ class MakeViewCommand extends Command
         return $content;
     }
 
-    protected function blocks($key, $values): string {
+    /**
+     * @param string $key
+     * @param array $values
+     * @return string
+     */
+    protected function blocks(string $key, array $values): string
+    {
         $content = '';
 
         foreach ($values as $item) {
@@ -81,36 +180,5 @@ class MakeViewCommand extends Command
         }
 
         return $content;
-    }
-
-    protected function content(string $extends, array $sections, array $stacks, array $components): string
-    {
-        $content = '';
-
-        if ($extends) {
-            $content .= "@extends('" . $extends . "')";
-        }
-
-        $types = [
-            'section' => $sections,
-            'component' => $components,
-            'push' => $stacks,
-        ];
-
-        foreach ($types as $key => $values) {
-            $content .= $this->blocks($key, $values);
-        }
-
-        return $content;
-    }
-
-    protected function create(string $path, string $content, bool $force)
-    {
-        if ($force || !file_exists($path)) {
-            \File::put($path, $content);
-            $this->info('View created successfully.');
-        } else {
-            $this->error('View already exists!');
-        }
     }
 }
