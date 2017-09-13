@@ -9,7 +9,8 @@
 
 A set of useful Laravel artisan commands
 
-- `php artisan laradeck:view admin.users.show` Create a new view `views/admin/users/show.blade.php`
+- `php artisan laradeck:view {name}` Create a new view
+- `php artisan laradeck:download {url}` Download file from url
 
 ## Install
 
