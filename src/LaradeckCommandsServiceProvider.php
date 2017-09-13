@@ -10,7 +10,7 @@ class LaradeckCommandsServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-
+        DownloadCommand::class,
     ];
 
     /**
