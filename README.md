@@ -1,4 +1,4 @@
-# laradeck-commands
+# laradeck Commands
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
@@ -9,20 +9,63 @@
 
 A set of useful Laravel artisan commands
 
+- `php artisan laradeck:view admin.users.show` Create a new view `views/admin/users/show.blade.php`
+
 ## Install
 
+### Downloading
 Via Composer
 
 ``` bash
-$ composer require ngtfkx/laradeck-commands
+$ composer require ngtfkx/laradeck-commands --dev
+```
+
+### Registering the service provider
+If you're using Laravel 5.5+, you can skip this step. The service provider will have already been registered
+thanks to auto-discovery. 
+
+Otherwise, register `Ngtfkx\Laradeck\Commands\LaradeckCommandsServiceProvider::class` manually in your `AppServiceProvider`'s
+`register` method:
+
+```php
+public function register()
+{
+    if ($this->app->environment() !== 'production') {
+        $this->app->register(\Ngtfkx\Laradeck\Commands\LaradeckCommandsServiceProvider::class);
+    }    
+}
 ```
 
 ## Usage
 
-``` php
-$skeleton = new League\Skeleton();
-echo $skeleton->echoPhrase('Hello, League!');
+### laradeck:view
+
+``` bash
+# Create a new view
+php artisan laradeck:view admin.users.show
 ```
+
+``` bash
+# Create a new view and rewrite old with same name
+php artisan laradeck:view admin.users.show --force
+```
+
+``` bash
+# Create a new view with @extends directive
+php artisan laradeck:view admin.users.show --extends=layouts.app
+```
+
+``` bash
+# Create a new view with @section directive
+php artisan laradeck:view admin.users.show --section=content --section=sidebar
+```
+
+``` bash
+# Create a new view with @section directive (other syntax)
+php artisan laradeck:view admin.users.show --section=content,sidebar
+```
+
+Similarly for `@push` and `@component` directives.
 
 ## Change log
 
