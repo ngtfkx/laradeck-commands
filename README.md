@@ -17,24 +17,14 @@ A set of useful Laravel artisan commands
 Via Composer
 
 ``` bash
-$ composer require ngtfkx/laradeck-commands --dev
+$ composer require ngtfkx/laradeck-commands
 ```
 
 ### Registering the service provider
 If you're using Laravel 5.5+, you can skip this step. The service provider will have already been registered
 thanks to auto-discovery. 
 
-Otherwise, register `Ngtfkx\Laradeck\Commands\LaradeckCommandsServiceProvider::class` manually in your `AppServiceProvider`'s
-`register` method:
-
-```php
-public function register()
-{
-    if ($this->app->environment() !== 'production') {
-        $this->app->register(\Ngtfkx\Laradeck\Commands\LaradeckCommandsServiceProvider::class);
-    }    
-}
-```
+Otherwise, add line `Ngtfkx\Laradeck\Commands\LaradeckCommandsServiceProvider::class,` manually in your `config\app.php` file.
 
 ## Usage
 
