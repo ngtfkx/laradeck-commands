@@ -29,6 +29,6 @@ class MakeViewCommand extends Command
 
         \File::put($viewPath, '');
 
-        $this->info('Success');
+        $this->info('View created successfully.');
     }
 }
