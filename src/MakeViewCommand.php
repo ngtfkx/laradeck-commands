@@ -17,20 +17,41 @@ class MakeViewCommand extends Command
 
     public function handle()
     {
-        $viewName = $this->argument('name');
+        $view = $this->argument('name');
 
         $force = $this->option('force');
 
-        $viewPath = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $viewName) . '.blade.php');
+        $path = $this->path($view);
 
-        $directory = dirname($viewPath);
+        $content = $this->content();
+
+        $this->create($path, $content, $force);
+    }
+
+    protected function path(string $view): string
+    {
+        $path = resource_path('views' . DIRECTORY_SEPARATOR . str_replace('.', DIRECTORY_SEPARATOR, $view) . '.blade.php');
+
+        $directory = dirname($path);
 
         if (!is_dir($directory)) {
             \File::makeDirectory($directory, 0755, true);
         }
 
-        if ($force || !file_exists($viewPath)) {
-            \File::put($viewPath, '');
+        return $path;
+    }
+
+    protected function content(): string
+    {
+        $content = '';
+
+        return $content;
+    }
+
+    protected function create(string $path, string $content, bool $force)
+    {
+        if ($force || !file_exists($path)) {
+            \File::put($path, $content);
             $this->info('View created successfully.');
         } else {
             $this->error('View already exists!');
