@@ -65,7 +65,7 @@ php artisan laradeck:view admin.users.show --section=content --section=sidebar
 php artisan laradeck:view admin.users.show --section=content,sidebar
 ```
 
-Similarly for `@push` and `@component` directives.
+Similarly for `@push` (`--stack`) and `@component` (`--component`) directives.
 
 ## Change log
 
