@@ -3,10 +3,11 @@
 namespace Ngtfkx\Laradeck\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class MakeViewCommand extends Command
 {
-    protected $signature = 'laradeck:view {name} {--force}';
+    protected $signature = 'laradeck:view {name} {--force} {--extends=} {--section=*} {--stack=*} {--component=*}';
 
     protected $description = 'Make view';
 
@@ -21,9 +22,17 @@ class MakeViewCommand extends Command
 
         $force = $this->option('force');
 
+        $extends = $this->option('extends');
+
+        $sections = $this->parse($this->option('section'));
+
+        $stacks = $this->parse($this->option('stack'));
+
+        $components = $this->parse($this->option('component'));
+
         $path = $this->path($view);
 
-        $content = $this->content();
+        $content = $this->content($extends, $sections, $stacks, $components);
 
         $this->create($path, $content, $force);
     }
@@ -41,9 +50,43 @@ class MakeViewCommand extends Command
         return $path;
     }
 
-    protected function content(): string
+    protected function parse($value): array
+    {
+        $values = [];
+
+        foreach($value as $item) {
+            if(Str::contains($item, ',')) {
+                $values = array_merge($values, explode(',', $item));
+            } else {
+                $values[] = $item;
+            }
+        }
+
+        return $values;
+    }
+
+    protected function content($extends, $sections, $stacks, $components): string
     {
         $content = '';
+
+        if ($extends) {
+            $content .= "@extends('" . $extends . "')";
+        }
+
+        foreach ($sections as $section) {
+            $content .=  PHP_EOL . PHP_EOL . "@section('" . $section . "')" . PHP_EOL;
+            $content .= "@endsection";
+        }
+
+        foreach ($components as $component) {
+            $content .= PHP_EOL . PHP_EOL . "@component('" . $component . "')" . PHP_EOL;
+            $content .= "@endcomponent";
+        }
+
+        foreach ($stacks as $stack) {
+            $content .= PHP_EOL . PHP_EOL . "@push('" . $stack . "')" . PHP_EOL;
+            $content .= "@endpush";
+        }
 
         return $content;
     }
